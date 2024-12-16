@@ -1,0 +1,17 @@
+services:
+  chat-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8899:8899"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
