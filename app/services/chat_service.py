@@ -1,6 +1,7 @@
 from llama_cpp import Llama
 from app.core.logger import logger
 from app.core.settings import get_settings
+from typing import List, Dict
 
 # Load settings
 config = get_settings()
@@ -21,21 +22,35 @@ class ChatService:
             logger.error(f"Failed to initialize the model: {str(e)}", exc_info=True)
             raise
 
-    def generate_response(self, prompt: str) -> str:
+    def generate_response(self, prompt: str, system_message: str = None) -> str:
         """
-        Generates a response for the given prompt using the model.
+        Generates a response using chat completion for the given prompt.
+        
+        Args:
+            prompt: The user's input message
+            system_message: Optional system message to override default
         """
-        logger.debug(f"Generating response for prompt: {prompt}")
+        logger.debug(f"Generating chat response for prompt: {prompt}")
         try:
-            output = self.llm(
-                prompt,
-                max_tokens=config.MODEL_MAX_TOKENS,  # Adjust token limit as needed
-                stop=["Q:", "\n"],
-                echo=False  # Only return the model's response
+            # Format the messages for chat completion
+            messages = [
+                {"role": "system", "content": system_message or config.SYSTEM_MESSAGE},
+                {"role": "user", "content": prompt}
+            ]
+            
+            # Use chat completion instead of text completion
+            output = self.llm.create_chat_completion(
+                messages=messages,
+                max_tokens=config.MODEL_MAX_TOKENS,
+                temperature=config.CHAT_TEMPERATURE,  # Use configured temperature
+                stop=None  # Let the model determine natural stopping points
             )
-            response = output["choices"][0]["text"].strip()
+            
+            # Extract the assistant's response from the chat completion
+            response = output["choices"][0]["message"]["content"].strip()
             logger.debug(f"Generated response: {response}")
             return response
+            
         except Exception as e:
             logger.error(f"Error generating response: {str(e)}", exc_info=True)
             raise
