@@ -19,7 +19,6 @@ The project uses the following Python libraries:
 - `Poetry`: For dependency management when running locally. Install it [here](https://python-poetry.org/docs/).
 
 ## How to Run
-- remember to create a `.env` file from the `.dev.env` file and set the correct values for the environment variables.
 
 ### Using Docker
 
@@ -30,7 +29,7 @@ docker compose up chat-service
 
 ### Running Locally
 
-1. Install Poetry: 
+1. Install Poetry:
 - Follow the installation instructions at Poetry's official site [here](https://python-poetry.org/docs/).
 
 2. Install Dependencies:
@@ -58,6 +57,7 @@ curl -X 'POST' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
+  "model": "quentin",
   "prompt": "what is a llm"
 }'
 
@@ -75,27 +75,26 @@ curl -X 'POST' \
 ├── Dockerfile                       # Defines the container environment for the application
 ├── docker-compose.yml               # Defines services, networks, and volumes for Docker
 ├── Makefile                         # Common tasks such as building/running the app and cleaning up
-├── README.md                        
+├── README.md
 ├── app                              # Main application folder
-│   ├── __init__.py                  
-│   ├── api                          
-│   │   ├── __init__.py              
-│   │   └── v1                       
-│   │       ├── __init__.py          
+│   ├── __init__.py
+│   ├── api
+│   │   ├── __init__.py
+│   │   └── v1
+│   │       ├── __init__.py
 │   │       └── chat_endpoints.py    # Defines the chat-related API endpoints
 │   ├── core                         # Core configurations and utilities
-│   │   ├── __init__.py              
+│   │   ├── __init__.py
 │   │   ├── logger.py                # Sets up the application logger
 │   │   └── settings.py              # Application settings and environment configurations
 │   ├── main.py                      # Entry point for the FastAPI application
-│   └── services                     
-│       ├── __init__.py              
-│       └── chat_service.py          # Handles chat-related operations and llama-cpp model 
+│   └── services
+│       ├── __init__.py
+│       └── chat_service.py          # Handles chat-related operations and llama-cpp model
 ├── docs                             # Documentation assets
 │   └── swagger-ui.png               # Screenshot or visual of the Swagger UI
 ├── poetry.lock                      # Locks dependency versions for reproducible builds
 ├── pyproject.toml                   # Poetry configuration for dependencies and project settings
-├── .dev.env                        # Environment variables for the application - copy from this file to .env
 ├── .vscode                         # VSCode configuration
 │   └── launch.json                   # Configuration for debugging the FastAPI application
 ```
