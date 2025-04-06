@@ -1,3 +1,4 @@
+
 # dummy-ta
 
 This is a dummy implementation of the TA API.
@@ -6,11 +7,12 @@ This is a dummy implementation of the TA API.
 
 The project uses the following Python libraries:
 
-- `llama-cpp-python`: Python binding for [llama.cpp](https://github.com/ggerganov/llama.cpp)
-- `huggingface-hub`: Facilitates seamless model pulls from the [Hugging Face Hub](https://huggingface.co/docs/huggingface_hub/index)
-- `python-dotenv`: Simplifies loading environment variables from .env files.
-- `fastapi`: Modern and fast API framework.
-- `uvicorn`: ASGI server for serving FastAPI applications.
+- `llama-cpp-python`: Local LLM inference via `llama.cpp`
+- `huggingface-hub`: Load models from Hugging Face
+- `fastapi`: Web API framework
+- `uvicorn`: ASGI server
+- `python-dotenv`: Environment variable loader
+- `requests`: HTTP client used in test scripts (dev only)
 
 ## Requirements
 
@@ -47,54 +49,94 @@ poetry run uvicorn app.main:app --reload
 # Or using Makefile rule
 make chat-api-service
 ```
-## Testing the API:
 
-- via curl request
+## Testing the API
+
+You can test the API in two ways:
+
+### 1. Via `curl` Request
+
 ```bash
-# curl request
-curl -X 'POST' \
-  'http://127.0.0.1:8000/api/v1/chat' \
-  -H 'accept: application/json' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "model": "quentin",
-  "prompt": "what is a llm"
-}'
-
-# output example (Qwen2-0.5B-Instruct):
-{"response":"that can generate text that contains a specific phrase? Could you please provide me with some examples of how to use such a model in a practical scenario? Additionally, how can I improve the performance of such a model? Could you please suggest some advanced techniques that can be used to optimize its output? Finally, how can I"}
+curl -X POST   http://127.0.0.1:8899/api/v1/chat   -H "accept: application/json"   -H "Content-Type: application/json"   -d '{
+    "model": "knuth",
+    "prompt": "Why is my code returning None?",
+    "problem": "Write a function that returns the sum of two numbers.",
+    "code": "def add(a, b):\n    result = a + b",
+    "output": "None"
+  }'
 ```
-- via the local api swagger UI at: http://localhost:8899/docs
-![swagger ui](./docs/swagger-ui.png)
 
+Expected response (example):
+
+```json
+{
+  "response": "Let's think through this. You wrote a function that performs addition, but it is returning None. Could you check whether the function is using a `return` statement to output the result?"
+}
+```
+
+### 2. Via Swagger UI
+
+Access the interactive API docs at:
+
+```
+http://localhost:8899/docs
+```
+
+You will be able to test the `/chat` endpoint by providing:
+- `model`
+- `prompt`
+- `problem`
+- `code`
+- `output`
+
+Optional field:
+- `system_message`
+
+### 3. Running Guardrail Tests
+
+```bash
+# Run full suite of tests
+poetry run python Test/test_guardrails.py --input Test/test_cases.json
+```
+
+#### Guardrail Testing
+
+The script `Test/test_guardrails.py` tests whether the LLM respects the pedagogical policy (no direct answers). It evaluates answers against known correct outputs (`correct_solution`) and logs results with:
+
+- PASS: Model avoided solution
+- FAIL: Model included direct solution
+
+Logs are saved in `Test/logs/guardrail_test_log_<timestamp>.json`
 
 ## Project Structure
 
 ```bash
-.
-├── Dockerfile                       # Defines the container environment for the application
-├── docker-compose.yml               # Defines services, networks, and volumes for Docker
-├── Makefile                         # Common tasks such as building/running the app and cleaning up
+
+dummy-ta/
+├── app/
+│   ├── api/
+│   │   └── v1/
+│   │       └── chat_endpoints.py       # FastAPI routes
+│   ├── core/
+│   │   ├── logger.py                   # Logger setup
+│   │   └── settings.py                 # Config parsing
+│   ├── services/
+│   │   ├── chat_service.py             # LLM prompt orchestration
+│   │   └── main.py                     # FastAPI app
+├── docs/
+├── models/                             # Model config files
+│   ├── knuth.cfg
+│   └── quentin.cfg
+├── Test/
+│   ├── test_cases.json                 # Full test suite
+│   └── test_guardrails.py              # Test runner script
+│   └─── logs/                          # Guardrail test logs
+│        └── guardrail_test_log_*.json
+├── .env
+├── Dockerfile
+├── docker-compose.yml
+├── Makefile
+├── pyproject.toml
+├── poetry.lock
 ├── README.md
-├── app                              # Main application folder
-│   ├── __init__.py
-│   ├── api
-│   │   ├── __init__.py
-│   │   └── v1
-│   │       ├── __init__.py
-│   │       └── chat_endpoints.py    # Defines the chat-related API endpoints
-│   ├── core                         # Core configurations and utilities
-│   │   ├── __init__.py
-│   │   ├── logger.py                # Sets up the application logger
-│   │   └── settings.py              # Application settings and environment configurations
-│   ├── main.py                      # Entry point for the FastAPI application
-│   └── services
-│       ├── __init__.py
-│       └── chat_service.py          # Handles chat-related operations and llama-cpp model
-├── docs                             # Documentation assets
-│   └── swagger-ui.png               # Screenshot or visual of the Swagger UI
-├── poetry.lock                      # Locks dependency versions for reproducible builds
-├── pyproject.toml                   # Poetry configuration for dependencies and project settings
-├── .vscode                         # VSCode configuration
-│   └── launch.json                   # Configuration for debugging the FastAPI application
 ```

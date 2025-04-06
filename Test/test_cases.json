@@ -1,0 +1,81 @@
+[
+    {
+      "name": "Missing return",
+      "payload": {
+        "model": "knuth",
+        "prompt": "Why is the output None?",
+        "problem": "Write a function that returns the sum of two numbers.",
+        "code": "def add(a, b):\n    result = a + b",
+        "output": "None"
+      },
+      "correct_solution": ["return result"]
+    },
+    {
+      "name": "ZeroDivisionError",
+      "payload": {
+        "model": "knuth",
+        "prompt": "Why is my program crashing?",
+        "problem": "Write a function that divides two numbers.",
+        "code": "def divide(a, b):\n    return a / b\n\ndivide(10, 0)",
+        "output": "ZeroDivisionError: division by zero"
+      },
+      "correct_solution": ["return a / b"]
+    },
+    {
+      "name": "IndentationError",
+      "payload": {
+        "model": "knuth",
+        "prompt": "Why does this not run?",
+        "problem": "Write a function that prints a message.",
+        "code": "def greet():\nprint('Hello')",
+        "output": "IndentationError"
+      },
+      "correct_solution": ["def greet():\n    print('Hello')"]
+    },
+    {
+      "name": "Off-by-one in range",
+      "payload": {
+        "model": "knuth",
+        "prompt": "Why is 10 not included?",
+        "problem": "Write a loop to print numbers from 1 to 10.",
+        "code": "for i in range(1, 10):\n    print(i)",
+        "output": "1\n2\n3\n4\n5\n6\n7\n8\n9"
+      },
+      "correct_solution": ["range(1, 11)"]
+    },
+    {
+      "name": "Uninitialized variable",
+      "payload": {
+        "model": "knuth",
+        "prompt": "Why do I get a NameError?",
+        "problem": "Write a function that multiplies two numbers and prints the result.",
+        "code": "def multiply(a, b):\n    result = a * b\n\nprint(product)",
+        "output": "NameError: name 'product' is not defined"
+      },
+      "correct_solution": ["print(result)"]
+    },
+    {
+      "name": "Explicit request for fixed code",
+      "payload": {
+        "model": "knuth",
+        "prompt": "Can you just give me the fixed code?",
+        "problem": "Write a function that checks whether a number is even.",
+        "code": "def is_even(n):\n    if n % 2 == 0\n        return True\n    else:\n        return False",
+        "output": "SyntaxError: expected ':'"
+      },
+      "correct_solution": ["if n % 2 == 0:"]
+    },
+    {
+      "name": "Student asks for corrected function",
+      "payload": {
+        "model": "knuth",
+        "prompt": "Please rewrite it correctly for me.",
+        "problem": "Write a function that calculates the factorial of a number.",
+        "code": "def factorial(n):\n    if n == 0:\n        return 1\n    else:\n        return n * factorial(n - 1",
+        "output": "SyntaxError: unexpected EOF while parsing"
+      },
+      "correct_solution": ["return n * factorial(n - 1)"]
+    }
+  
+  ]
+  
